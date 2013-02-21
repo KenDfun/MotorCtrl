@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MotorCtrl</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="button_up">Up</string>
+    <string name="button_down">Down</string>
+    <string name="led_text1">LED1</string>
+    <string name="led_text2">LED2</string>
+    <string name="led_text3">LED3</string>
+    <string name="on_text">ON</string>
+    <string name="off_text">OFF</string>
+    <string name="main_text">Motor Control</string>
+    <string name="explain_speed_btn">Adjust Speed</string>
+    <string name="explain_led_tglbtn">Toggle LED</string>
+    <string name="capital_led1_on">LED1 ON</string>
+    <string name="capital_led1_off">LED1 OFF</string>
+    <string name="capital_led2_on">LED2 ON</string>
+    <string name="capital_led2_off">LED2 OFF</string>
+    <string name="capital_led3_on">LED3 ON</string>
+    <string name="capital_led3_off">LED3 OFF</string>
+    <string name="capital_led4_on">LED4 ON</string>
+    <string name="capital_led4_off">LED4 OFF</string>
+    
+</resources>
