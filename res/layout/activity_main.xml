@@ -45,6 +45,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onClickTglBtn"
             android:text="@string/led_text1"
             android:textOff="@string/capital_led1_off"
             android:textOn="@string/capital_led1_on" />
@@ -54,6 +55,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onClickTglBtn"
             android:text="@string/led_text1"
             android:textOff="@string/capital_led2_off"
             android:textOn="@string/capital_led2_on" />
@@ -63,6 +65,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onClickTglBtn"
             android:text="@string/led_text1"
             android:textOff="@string/capital_led3_off"
             android:textOn="@string/capital_led3_on" />
@@ -72,6 +75,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onClickTglBtn"
             android:text="@string/led_text1"
             android:textOff="@string/capital_led3_off"
             android:textOn="@string/capital_led3_on" />
@@ -99,6 +103,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onClickSpeed"
             android:text="@string/button_up" />
 
         <Button
@@ -106,6 +111,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onClickSpeed"
             android:text="@string/button_down" />
 
     </LinearLayout>

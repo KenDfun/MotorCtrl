@@ -3,17 +3,22 @@ package com.design_fun.motorctrl;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
-import android.widget.TextView;
-import android.widget.Button;
-import android.view.View.OnClickListener;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.ScrollView;
+import android.widget.ToggleButton;
 
-public class MainActivity extends Activity implements OnClickListener{
+
+public class MainActivity extends Activity{
 	private TextView mTview;
-	private Button buttonUp;
-	private Button buttonDown;
 	private ScrollView mScroll;
+	private ToggleButton mTglLed1;
+	private ToggleButton mTglLed2;
+	private ToggleButton mTglLed3;
+	private ToggleButton mTglLed4;
+	
+	
+	//btSp = new this.ButtonSp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -21,16 +26,14 @@ public class MainActivity extends Activity implements OnClickListener{
 		setContentView(R.layout.activity_main);
 		
 		mScroll = (ScrollView)findViewById(R.id.scrollView1);
-		
 		mTview = (TextView)findViewById(R.id.textView1);
 
 		
-		buttonUp = (Button)findViewById(R.id.button1);
-		buttonUp.setOnClickListener(this);
-		buttonDown = (Button)findViewById(R.id.button2);
-		buttonDown.setOnClickListener(this);
-		
-		
+		mTglLed1 = (ToggleButton) findViewById(R.id.toggleButton1);  
+//		mTglLed1.setOnCheckedChangeListener((OnCheckedChangeListener) this);
+		mTglLed2 = (ToggleButton) findViewById(R.id.toggleButton2);  
+		mTglLed3 = (ToggleButton) findViewById(R.id.toggleButton3);  
+		mTglLed4 = (ToggleButton) findViewById(R.id.toggleButton4);  
 
 	}
 
@@ -41,19 +44,71 @@ public class MainActivity extends Activity implements OnClickListener{
 		return true;
 	}
 	
-	public void onClick(View v)
+
+	public void onClickSpeed(View v)
 	{
-		if(v==buttonUp){
+		switch(v.getId()){
+		case R.id.button1:
 			mTview.append("Push UP!\n> ");
 			mScroll.post(new ScrollDown());
-		}
-		else if(v==buttonDown){
+			break;
+			
+		case R.id.button2:
 			mTview.append("Push Down!\n> ");
 			mScroll.post(new ScrollDown());
+			break;
 		}
 		
 	}
 
+
+	 public void onClickTglBtn(View v){
+		 String str;
+		 
+		 switch(v.getId()){
+		 case R.id.toggleButton1:
+			str = "LED1 ";
+			if(mTglLed1.isChecked()){
+				str += "ON\n";
+			}
+			else{
+				str += "OFF\n";
+			}
+			break;
+		 case R.id.toggleButton2:
+			str = "LED2 ";
+			if(mTglLed2.isChecked()){
+				str += "ON\n";
+			}
+			else{
+				str += "OFF\n";
+			}
+			break;
+		 case R.id.toggleButton3:
+			str = "LED3 ";
+			if(mTglLed3.isChecked()){
+				str += "ON\n";
+			}
+			else{
+				str += "OFF\n";
+			}
+			break;
+		 case R.id.toggleButton4:
+			str = "LED4 ";
+			if(mTglLed4.isChecked()){
+				str += "ON\n";
+			}
+			else{
+				str += "OFF\n";
+			}
+			break;
+		default:
+			str = "none";
+		} 		
+		
+		mTview.append(str+"> ");
+		mScroll.post(new ScrollDown());
+	 }
 
 	/* scroll down thread */
 	private class ScrollDown implements Runnable { // (8)
