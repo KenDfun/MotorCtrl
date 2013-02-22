@@ -6,18 +6,26 @@
     android:orientation="vertical"
     tools:context=".MainActivity" >
 
-    <TextView
-        android:id="@+id/textView1"
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollHorizontally="true"
         android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:scrollbarStyle="insideOverlay"
-        android:scrollbars="vertical"
-        android:singleLine="false"
-        android:text="@string/main_text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollHorizontally="false"
+            android:scrollbarAlwaysDrawVerticalTrack="false"
+            android:singleLine="false"
+            android:text="@string/prompt_text"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </ScrollView>
 
     <TextView
         android:id="@+id/textView3"

@@ -22,5 +22,6 @@
     <string name="capital_led3_off">LED3 OFF</string>
     <string name="capital_led4_on">LED4 ON</string>
     <string name="capital_led4_off">LED4 OFF</string>
+    <string name="prompt_text">"> "</string>
     
 </resources>
