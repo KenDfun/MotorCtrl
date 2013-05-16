@@ -95,8 +95,7 @@
         android:id="@+id/linearLayoutSpeedBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        android:showDividers="beginning" >
+        android:layout_marginBottom="0dp" >
 
         <Button
             android:id="@+id/button1"

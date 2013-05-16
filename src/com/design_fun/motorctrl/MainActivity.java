@@ -112,7 +112,8 @@ public class MainActivity extends Activity{
 
 	/* scroll down thread */
 	private class ScrollDown implements Runnable { // (8)
-        public void run() {
+        @Override
+		public void run() {
         	mScroll.fullScroll(View.FOCUS_DOWN); // (9)
         }
     }	
