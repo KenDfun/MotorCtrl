@@ -1,11 +1,21 @@
 package com.design_fun.motorctrl;
 
+import com.design_fun.motorctrl.BluetoothChatService;
+//import com.design_fun.motorctrl.DeviceListActivity;
+
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ScrollView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
@@ -16,8 +26,20 @@ public class MainActivity extends Activity{
 	private ToggleButton mTglLed2;
 	private ToggleButton mTglLed3;
 	private ToggleButton mTglLed4;
+
+    //メッセージ定数
+    public static final int MSG_STATE_CHANGE=1;
+    public static final int MSG_READ        =2;
+
+    //リクエスト定数
+    private static final int RQ_CONNECT_DEVICE=1;
+    private static final int RQ_ENABLE_BT     =2;
+
 	
-	
+    //Bluetooth
+    private BluetoothAdapter     btAdapter;
+    private BluetoothChatService chatService;
+    
 	//btSp = new this.ButtonSp;
 
 	@Override
@@ -39,10 +61,174 @@ public class MainActivity extends Activity{
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuItem item0=menu.add(0,0,0,"端末検索");
+        item0.setIcon(android.R.drawable.ic_search_category_default);
+        MenuItem item1=menu.add(0,1,0,"発見有効");
+        item1.setIcon(android.R.drawable.ic_menu_call);
+
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
+
+    //オプションメニュー選択時に呼ばれる
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        //検索
+        case 0:
+//            Intent serverIntent=new Intent(this,DeviceListActivity.class);
+//            startActivityForResult(serverIntent,RQ_CONNECT_DEVICE);
+            return true;
+        //発見有効
+        case 1:
+//            ensureDiscoverable();
+            return true;
+        }
+        return false;
+    }
+	
+    //アクティビティ開始時(ストップからの復帰)に呼ばれる
+    @Override
+    public void onStart() {
+        super.onStart();
+/*
+        if (!btAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(
+                BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent,RQ_ENABLE_BT);
+        } else {
+            if (chatService==null) chatService=
+                new BluetoothChatService(this,handler);
+        }
+*/
+        if (chatService==null) chatService=
+                new BluetoothChatService(this,handler);
+    }
+
+    //アクティビティ再開時(ポーズからの復帰)に呼ばれる
+    @Override
+    public synchronized void onResume() {
+        super.onResume();
+        if (chatService!=null) {
+            if (chatService.getState()==BluetoothChatService.STATE_NONE) {
+                //Bluetoothの接続待ち(サーバ)
+                chatService.start();
+            }
+        }
+    }
+
+    //アクティビティ破棄時に呼ばれる
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (chatService!=null) chatService.stop();
+    }
+
+    /*
+    //他のBluetooth端末からの発見を有効化(4)
+    private void ensureDiscoverable() {
+        if (btAdapter.getScanMode()!=
+            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent=new Intent(
+                BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(
+                BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,300);
+            startActivity(discoverableIntent);
+        }
+    }
+*/
+    
+    //チャットサーバから情報を取得するハンドラ
+    private final Handler handler=new Handler() {
+        //ハンドルメッセージ
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            case MSG_STATE_CHANGE:
+                switch (msg.arg1) {
+                case BluetoothChatService.STATE_CONNECTED:
+                    scr_append("接続完了");break;
+                case BluetoothChatService.STATE_CONNECTING:
+                	scr_append("接続中");break;
+                case BluetoothChatService.STATE_LISTEN:
+                case BluetoothChatService.STATE_NONE:
+                	scr_append("未接続");break;
+                }
+                break;
+            //メッセージ受信
+            case MSG_READ:
+                byte[] readBuf=(byte[])msg.obj;
+                scr_append(new String(readBuf,0,msg.arg1));
+                break;
+            }
+        }
+    };
+
+    //アクティビティ復帰時に呼ばれる
+    public void onActivityResult(int requestCode,int resultCode,Intent data) {
+        switch (requestCode) {
+        //端末検索
+        case RQ_CONNECT_DEVICE:
+        	/*
+            if (resultCode==Activity.RESULT_OK) {
+                String address=data.getExtras().
+                    getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                
+                //Bluetoothの接続要求(クライアント)
+                BluetoothDevice device=btAdapter.getRemoteDevice(address);
+                chatService.connect(device);
+            }
+            */
+        	scr_append("RQ_CONNECT_DEVICE");
+            break;
+        //発見有効
+        case RQ_ENABLE_BT:
+        	/*
+            if (resultCode==Activity.RESULT_OK) {
+                chatService=new BluetoothChatService(this,handler);
+            } else {
+                Toast.makeText(this,"Bluetoothが有効ではありません",
+                	Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            */
+        	scr_append("RQ_ENABLE_BT");      	
+        }
+    }
+
+
+/*
+    //受信テキストの追加
+    private void addText(final String text) {
+        //ハンドラによるユーザーインタフェース操作
+        handler.post(new Runnable(){
+            public void run() {
+                lblReceive.setText(text+"\n"+
+                    lblReceive.getText());
+            }
+        });
+    }
+    
+    //ボタンクリックイベントの処理
+    public void onClick(View v) {
+        if (v==btnSend) {
+            try {
+                //メッセージの送信
+                String message=edtSend.getText().toString();
+                if (message.length()>0) {
+                    chatService.write(message.getBytes());
+                }
+                addText(message);
+                edtSend.setText("",TextView.BufferType.NORMAL);
+            } catch (Exception e) {
+                addText("通信失敗しました");
+            }           
+        }
+    }  
+}
+*/
 	
 
 	public void onClickSpeed(View v)
@@ -51,6 +237,7 @@ public class MainActivity extends Activity{
 		case R.id.button1:
 			mTview.append("Push UP!\n> ");
 			mScroll.post(new ScrollDown());
+			chatService.write("msg: up".getBytes());
 			break;
 			
 		case R.id.button2:
@@ -110,6 +297,11 @@ public class MainActivity extends Activity{
 		mScroll.post(new ScrollDown());
 	 }
 
+	 private void scr_append(String str){
+		 mTview.append(str+"\n> ");
+		 mScroll.post(new ScrollDown());
+	 }
+	 
 	/* scroll down thread */
 	private class ScrollDown implements Runnable { // (8)
         @Override
