@@ -1,5 +1,8 @@
 package com.design_fun.motorctrl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
 import com.design_fun.motorctrl.MainActivity;
@@ -7,6 +10,8 @@ import com.design_fun.motorctrl.MainActivity;
 //import com.example.bluetoothex.BluetoothChatService.ConnectedThread;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
 
@@ -28,7 +33,7 @@ public class BluetoothChatService {
     private Handler          handler;
 //    private AcceptThread     acceptThread;
 //    private ConnectThread    connectThread;
-//    private ConnectedThread  connectedThread;
+    private ConnectedThread  connectedThread;
     private int              state;
 
     //コンストラクタ
@@ -68,7 +73,24 @@ public class BluetoothChatService {
 */
         setState(STATE_NONE);
     }
+ 
     
+    //Bluetooth接続完了後の処理
+//    public synchronized void connected(BluetoothSocket socket,BluetoothDevice device) {
+    public synchronized void connected() {
+/*
+    if (connectThread!=null) {
+            connectThread.cancel();connectThread=null;}
+        if (connectedThread!=null) {
+            connectedThread.cancel();connectedThread=null;}
+        if (acceptThread!=null) {
+            acceptThread.cancel();acceptThread=null;}
+*/
+        connectedThread=new ConnectedThread();
+        connectedThread.start();
+        setState(STATE_CONNECTED);
+    }
+
     //書き込み
     public void write(byte[] buf) {
     	int bytes = buf.length;
@@ -85,5 +107,32 @@ public class BluetoothChatService {
         */
     }
 
+    
+    //Bluetooth接続完了後の処理(7)
+    private class ConnectedThread extends Thread {
+     	boolean  read_flg = false;
+    	byte[] readbuf=new byte[1024];
+
+  	
+        //処理
+        public void run() {
+            while (true) {
+            	if(read_flg){
+                    handler.obtainMessage(MainActivity.MSG_READ,
+                            readbuf.length,-1,readbuf).sendToTarget();         		
+            	}
+            	read_flg = false;
+            	Thread.sleep(1000);
+            }
+        }
+        
+        public void write(byte[] buf) {
+        	for(int i=0; i<buf.length; i++){
+        		readbuf[i] = buf[i];
+        	}
+        	read_flg = true;
+        }
+
+    }
     
 }

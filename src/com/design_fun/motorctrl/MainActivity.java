@@ -235,14 +235,11 @@ public class MainActivity extends Activity{
 	{
 		switch(v.getId()){
 		case R.id.button1:
-			mTview.append("Push UP!\n> ");
-			mScroll.post(new ScrollDown());
-			chatService.write("msg: up".getBytes());
+			chatService.write("Push Up".getBytes());
 			break;
 			
 		case R.id.button2:
-			mTview.append("Push Down!\n> ");
-			mScroll.post(new ScrollDown());
+			chatService.write("Push Down".getBytes());
 			break;
 		}
 		
@@ -256,45 +253,44 @@ public class MainActivity extends Activity{
 		 case R.id.toggleButton1:
 			str = "LED1 ";
 			if(mTglLed1.isChecked()){
-				str += "ON\n";
+				str += "ON";
 			}
 			else{
-				str += "OFF\n";
+				str += "OFF";
 			}
 			break;
 		 case R.id.toggleButton2:
 			str = "LED2 ";
 			if(mTglLed2.isChecked()){
-				str += "ON\n";
+				str += "ON";
 			}
 			else{
-				str += "OFF\n";
+				str += "OFF";
 			}
 			break;
 		 case R.id.toggleButton3:
 			str = "LED3 ";
 			if(mTglLed3.isChecked()){
-				str += "ON\n";
+				str += "ON";
 			}
 			else{
-				str += "OFF\n";
+				str += "OFF";
 			}
 			break;
 		 case R.id.toggleButton4:
 			str = "LED4 ";
 			if(mTglLed4.isChecked()){
-				str += "ON\n";
+				str += "ON";
 			}
 			else{
-				str += "OFF\n";
+				str += "OFF";
 			}
 			break;
 		default:
 			str = "none";
 		} 		
 		
-		mTview.append(str+"> ");
-		mScroll.post(new ScrollDown());
+		chatService.write(str.getBytes());
 	 }
 
 	 private void scr_append(String str){
