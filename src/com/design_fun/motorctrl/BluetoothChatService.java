@@ -14,6 +14,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 public class BluetoothChatService {
     //設定定数
@@ -59,6 +60,7 @@ public class BluetoothChatService {
     //Bluetoothの接続待ち(サーバ)
     public synchronized void start() {
         setState(STATE_LISTEN);
+        connected();
     }
 
     //Bluetoothの切断
@@ -72,6 +74,7 @@ public class BluetoothChatService {
             acceptThread.cancel();acceptThread=null;}
 */
         setState(STATE_NONE);
+        Log.d("debug","chatservice stop");
     }
  
     
@@ -92,19 +95,14 @@ public class BluetoothChatService {
     }
 
     //書き込み
-    public void write(byte[] buf) {
-    	int bytes = buf.length;
-    	
-        handler.obtainMessage(MainActivity.MSG_READ,
-                bytes,-1,buf).sendToTarget();
-        /*
+    public void write(byte[] out) {
         ConnectedThread r;
+        
         synchronized (this) {
             if (state!=STATE_CONNECTED) return;
             r=connectedThread;
         }
         r.write(out);
-        */
     }
 
     
@@ -122,7 +120,9 @@ public class BluetoothChatService {
                             readbuf.length,-1,readbuf).sendToTarget();         		
             	}
             	read_flg = false;
-            	Thread.sleep(1000);
+            	try{
+            		Thread.sleep(1000); //3000ミリ秒Sleepする
+            	}catch(InterruptedException e){}
             }
         }
         
@@ -130,6 +130,8 @@ public class BluetoothChatService {
         	for(int i=0; i<buf.length; i++){
         		readbuf[i] = buf[i];
         	}
+        	readbuf[buf.length]='\0';
+        	readbuf[buf.length+1]='\0';
         	read_flg = true;
         }
 

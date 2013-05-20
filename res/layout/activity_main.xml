@@ -77,8 +77,8 @@
             android:layout_weight="1"
             android:onClick="onClickTglBtn"
             android:text="@string/led_text1"
-            android:textOff="@string/capital_led3_off"
-            android:textOn="@string/capital_led3_on" />
+            android:textOff="@string/capital_led4_off"
+            android:textOn="@string/capital_led4_on" />
 
     </LinearLayout>
 

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
+import android.util.Log;;
 
 public class MainActivity extends Activity{
 	private TextView mTview;
@@ -56,7 +56,7 @@ public class MainActivity extends Activity{
 		mTglLed2 = (ToggleButton) findViewById(R.id.toggleButton2);  
 		mTglLed3 = (ToggleButton) findViewById(R.id.toggleButton3);  
 		mTglLed4 = (ToggleButton) findViewById(R.id.toggleButton4);  
-
+        Log.d("debug","onCreate");
 	}
 
 	@Override
@@ -105,6 +105,8 @@ public class MainActivity extends Activity{
 */
         if (chatService==null) chatService=
                 new BluetoothChatService(this,handler);
+        Log.d("debug","onStart");
+
     }
 
     //アクティビティ再開時(ポーズからの復帰)に呼ばれる
@@ -117,6 +119,7 @@ public class MainActivity extends Activity{
                 chatService.start();
             }
         }
+        Log.d("debug","onResume");
     }
 
     //アクティビティ破棄時に呼ばれる
@@ -124,6 +127,7 @@ public class MainActivity extends Activity{
     public void onDestroy() {
         super.onDestroy();
         if (chatService!=null) chatService.stop();
+        Log.d("debug","onDestroy");
     }
 
     /*
