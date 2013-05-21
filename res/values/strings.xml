@@ -3,7 +3,7 @@
 
     <string name="app_name">MotorCtrl</string>
     <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_settings">設定</string>
     <string name="button_up">Up</string>
     <string name="button_down">Down</string>
     <string name="led_text1">LED1</string>
@@ -23,5 +23,6 @@
     <string name="capital_led4_on">LED4 ON</string>
     <string name="capital_led4_off">LED4 OFF</string>
     <string name="prompt_text">"> "</string>
+    <string name="search_bt">端末検索</string>
     
 </resources>

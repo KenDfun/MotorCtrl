@@ -62,11 +62,7 @@ public class MainActivity extends Activity{
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        MenuItem item0=menu.add(0,0,0,"í[ññåüçı");
-        item0.setIcon(android.R.drawable.ic_search_category_default);
-        MenuItem item1=menu.add(0,1,0,"î≠å©óLå¯");
-        item1.setIcon(android.R.drawable.ic_menu_call);
-
+ 
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
@@ -77,15 +73,16 @@ public class MainActivity extends Activity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         //åüçı
-        case 0:
-//            Intent serverIntent=new Intent(this,DeviceListActivity.class);
-//            startActivityForResult(serverIntent,RQ_CONNECT_DEVICE);
+        case R.id.search_bt:
+            Intent serverIntent=new Intent(this,DeviceListActivity.class);
+            startActivityForResult(serverIntent,RQ_CONNECT_DEVICE);
             return true;
-        //î≠å©óLå¯
-        case 1:
-//            ensureDiscoverable();
-            return true;
-        }
+        case R.id.menu_settings:
+//          Intent serverIntent=new Intent(this,DeviceListActivity.class);
+//          startActivityForResult(serverIntent,RQ_CONNECT_DEVICE);
+      	scr_append("menu");
+      		return true;
+      	}
         return false;
     }
 	
