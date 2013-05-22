@@ -5,12 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import com.design_fun.motorctrl.MainActivity;
-//import com.example.bluetoothex.BluetoothEx;
-//import com.example.bluetoothex.BluetoothChatService.ConnectedThread;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
@@ -32,14 +30,14 @@ public class BluetoothChatService {
     //変数
     private BluetoothAdapter adapter;
     private Handler          handler;
-//    private AcceptThread     acceptThread;
-//    private ConnectThread    connectThread;
+    private AcceptThread     acceptThread;
+    private ConnectThread    connectThread;
     private ConnectedThread  connectedThread;
     private int              state;
 
     //コンストラクタ
     public BluetoothChatService(Context context,Handler handler) {
-//        this.adapter=BluetoothAdapter.getDefaultAdapter();
+        this.adapter=BluetoothAdapter.getDefaultAdapter();
         this.state  =STATE_NONE;
         this.handler=handler;
     }
@@ -59,40 +57,56 @@ public class BluetoothChatService {
     
     //Bluetoothの接続待ち(サーバ)
     public synchronized void start() {
+        if (connectThread!=null) {
+            connectThread.cancel();connectThread=null;}
+        if (connectedThread!=null) {
+            connectedThread.cancel();connectedThread=null;}
+        if (acceptThread==null) {
+            acceptThread=new AcceptThread();
+            acceptThread.start();
+        }
         setState(STATE_LISTEN);
-        connected();
     }
 
-    //Bluetoothの切断
-    public synchronized void stop() {
-/*
+    //Bluetoothの接続要求(クライアント)
+    public synchronized void connect(BluetoothDevice device) {
+        if (state==STATE_CONNECTING) {
+            if (connectThread!=null) {
+                connectThread.cancel();connectThread=null;}
+        }
+        if (connectedThread!=null) {
+            connectedThread.cancel();connectedThread=null;}
+        connectThread=new ConnectThread(device);
+        connectThread.start();
+        setState(STATE_CONNECTING);
+    }
+
+    //Bluetooth接続完了後の処理
+    public synchronized void connected(BluetoothSocket socket,
+        BluetoothDevice device) {
         if (connectThread!=null) {
             connectThread.cancel();connectThread=null;}
         if (connectedThread!=null) {
             connectedThread.cancel();connectedThread=null;}
         if (acceptThread!=null) {
             acceptThread.cancel();acceptThread=null;}
-*/
-        setState(STATE_NONE);
-        Log.d("debug","chatservice stop");
+        connectedThread=new ConnectedThread(socket);
+        connectedThread.start();
+        setState(STATE_CONNECTED);
     }
- 
-    
-    //Bluetooth接続完了後の処理
-//    public synchronized void connected(BluetoothSocket socket,BluetoothDevice device) {
-    public synchronized void connected() {
-/*
-    if (connectThread!=null) {
+
+    //Bluetoothの切断
+    public synchronized void stop() {
+        if (connectThread!=null) {
             connectThread.cancel();connectThread=null;}
         if (connectedThread!=null) {
             connectedThread.cancel();connectedThread=null;}
         if (acceptThread!=null) {
             acceptThread.cancel();acceptThread=null;}
-*/
-        connectedThread=new ConnectedThread();
-        connectedThread.start();
-        setState(STATE_CONNECTED);
+        setState(STATE_NONE);
+        Log.d("debug","chatservice stop");
     }
+ 
 
     //書き込み
     public void write(byte[] out) {
@@ -106,35 +120,152 @@ public class BluetoothChatService {
     }
 
     
-    //Bluetooth接続完了後の処理(7)
-    private class ConnectedThread extends Thread {
-     	boolean  read_flg = false;
-    	byte[] readbuf=new byte[1024];
-
-  	
-        //処理
-        public void run() {
-            while (true) {
-            	if(read_flg){
-                    handler.obtainMessage(MainActivity.MSG_READ,
-                            readbuf.length,-1,readbuf).sendToTarget();         		
-            	}
-            	read_flg = false;
-            	try{
-            		Thread.sleep(1000); //3000ミリ秒Sleepする
-            	}catch(InterruptedException e){}
+    //Bluetoothの接続待ち(サーバ)(5)
+    private class AcceptThread extends Thread {
+        private BluetoothServerSocket serverSocket;
+        
+        //コンストラクタ
+        public AcceptThread() {
+            try {
+                serverSocket=adapter.
+                    listenUsingRfcommWithServiceRecord(NAME,MY_UUID);
+            } catch (IOException e) {
             }
         }
-        
-        public void write(byte[] buf) {
-        	for(int i=0; i<buf.length; i++){
-        		readbuf[i] = buf[i];
-        	}
-        	readbuf[buf.length]='\0';
-        	readbuf[buf.length+1]='\0';
-        	read_flg = true;
+
+        //処理
+        public void run() {
+            BluetoothSocket socket=null;
+            while (state!=STATE_CONNECTED) {
+                try {
+                    socket=serverSocket.accept();
+                } catch (IOException e) {
+                    break;
+                }
+                if (socket!=null) {
+                    synchronized (BluetoothChatService.this) {
+                        switch (state) {
+                        case STATE_LISTEN:
+                        case STATE_CONNECTING:
+                            connected(socket,socket.getRemoteDevice());
+                            break;
+                        case STATE_NONE:
+                        case STATE_CONNECTED:
+                            try {
+                                socket.close();
+                            } catch (IOException e) {
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
+        //キャンセル
+        public void cancel() {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    //Bluetoothの接続要求(クライアント)(6)
+    private class ConnectThread extends Thread {
+        private BluetoothDevice device;
+        private BluetoothSocket socket;
+
+        //コンストラクタ
+        public ConnectThread(BluetoothDevice device) {
+            try {
+                this.device=device;
+                this.socket=device.createRfcommSocketToServiceRecord(MY_UUID);
+            } catch (IOException e) {
+            }
+        }
+
+        //処理
+        public void run() {
+            adapter.cancelDiscovery();
+            try {
+                socket.connect();
+            } catch (IOException e) {
+                setState(STATE_LISTEN);
+                try {
+                    socket.close();
+                } catch (IOException e2) {
+                }
+                BluetoothChatService.this.start();
+                return;
+            }
+            synchronized (BluetoothChatService.this) {
+                connectThread=null;
+            }
+            connected(socket,device);
+        }
+
+        //キャンセル
+        public void cancel() {
+            try {
+                socket.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    //Bluetooth接続完了後の処理(7)
+    private class ConnectedThread extends Thread {
+        private BluetoothSocket socket;
+        private InputStream     input;
+        private OutputStream    output;
+
+        //コンストラクタ
+        public ConnectedThread(BluetoothSocket socket) {
+            try {
+                this.socket=socket;
+                this.input =socket.getInputStream();
+                this.output=socket.getOutputStream();
+            } catch (IOException e) {
+            }
+        }
+
+        //処理
+        public void run() {
+            byte[] buf=new byte[1024];
+            int bytes;
+            while (true) {
+                try {
+                    bytes=input.read(buf);
+                    handler.obtainMessage(MainActivity.MSG_READ,
+                        bytes,-1,buf).sendToTarget();
+                } catch (IOException e) {
+                    setState(STATE_LISTEN);
+                    break;
+                }
+            }
+        }
+
+        //書き込み
+        public void write(byte[] buf) {
+        	byte[] msgBytes = "write!".getBytes();
+        	
+            handler.obtainMessage(MainActivity.MSG_READ,
+                    msgBytes.length,-1,msgBytes).sendToTarget();
+            
+            try {
+                output.write(buf);
+            } catch (IOException e) {
+            }
+        }
+
+        //キャンセル
+        public void cancel() {
+            try {
+                socket.close();
+            } catch (IOException e) {
+            }
+        }
     }
     
 }

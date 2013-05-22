@@ -88,16 +88,16 @@ public class MainActivity extends Activity{
     @Override
     public void onStart() {
         super.onStart();
-/*
         if (!btAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(
+/*
+        	Intent enableIntent = new Intent(
                 BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent,RQ_ENABLE_BT);
+*/
         } else {
             if (chatService==null) chatService=
                 new BluetoothChatService(this,handler);
         }
-*/
         if (chatService==null) chatService=
                 new BluetoothChatService(this,handler);
         Log.d("debug","onStart");
