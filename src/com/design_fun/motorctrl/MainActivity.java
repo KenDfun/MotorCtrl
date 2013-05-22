@@ -1,7 +1,7 @@
 package com.design_fun.motorctrl;
 
 import com.design_fun.motorctrl.BluetoothChatService;
-//import com.design_fun.motorctrl.DeviceListActivity;
+import com.design_fun.motorctrl.DeviceListActivity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,9 +33,7 @@ public class MainActivity extends Activity{
 
     //リクエスト定数
     private static final int RQ_CONNECT_DEVICE=1;
-    private static final int RQ_ENABLE_BT     =2;
 
-	
     //Bluetooth
     private BluetoothAdapter     btAdapter;
     private BluetoothChatService chatService;
@@ -126,20 +124,6 @@ public class MainActivity extends Activity{
         if (chatService!=null) chatService.stop();
         Log.d("debug","onDestroy");
     }
-
-    /*
-    //他のBluetooth端末からの発見を有効化(4)
-    private void ensureDiscoverable() {
-        if (btAdapter.getScanMode()!=
-            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent discoverableIntent=new Intent(
-                BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(
-                BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,300);
-            startActivity(discoverableIntent);
-        }
-    }
-*/
     
     //チャットサーバから情報を取得するハンドラ
     private final Handler handler=new Handler() {
@@ -184,18 +168,6 @@ public class MainActivity extends Activity{
             */
         	scr_append("RQ_CONNECT_DEVICE");
             break;
-        //発見有効
-        case RQ_ENABLE_BT:
-        	/*
-            if (resultCode==Activity.RESULT_OK) {
-                chatService=new BluetoothChatService(this,handler);
-            } else {
-                Toast.makeText(this,"Bluetoothが有効ではありません",
-                	Toast.LENGTH_SHORT).show();
-                finish();
-            }
-            */
-        	scr_append("RQ_ENABLE_BT");      	
         }
     }
 
