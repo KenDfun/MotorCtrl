@@ -156,7 +156,6 @@ public class MainActivity extends Activity{
         switch (requestCode) {
         //í[ññåüçı
         case RQ_CONNECT_DEVICE:
-        	/*
             if (resultCode==Activity.RESULT_OK) {
                 String address=data.getExtras().
                     getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
@@ -165,7 +164,6 @@ public class MainActivity extends Activity{
                 BluetoothDevice device=btAdapter.getRemoteDevice(address);
                 chatService.connect(device);
             }
-            */
         	scr_append("RQ_CONNECT_DEVICE");
             break;
         }
