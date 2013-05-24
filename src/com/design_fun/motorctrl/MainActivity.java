@@ -33,6 +33,7 @@ public class MainActivity extends Activity{
 
     //リクエスト定数
     private static final int RQ_CONNECT_DEVICE=1;
+    private static final int RQ_ENABLE_BT     =2;
 
     //Bluetooth
     private BluetoothAdapter     btAdapter;
@@ -54,7 +55,18 @@ public class MainActivity extends Activity{
 		mTglLed2 = (ToggleButton) findViewById(R.id.toggleButton2);  
 		mTglLed3 = (ToggleButton) findViewById(R.id.toggleButton3);  
 		mTglLed4 = (ToggleButton) findViewById(R.id.toggleButton4);  
-        Log.d("debug","onCreate");
+ 
+	    // Get local Bluetooth adapter
+		btAdapter = BluetoothAdapter.getDefaultAdapter();
+	 
+	    // If the adapter is null, then Bluetooth is not supported
+	    if (btAdapter == null) {
+	        Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+	        finish();
+	        return;
+	    }
+
+		Log.d("debug","onCreate");
 	}
 
 	@Override
@@ -89,11 +101,9 @@ public class MainActivity extends Activity{
     public void onStart() {
         super.onStart();
         if (!btAdapter.isEnabled()) {
-/*
         	Intent enableIntent = new Intent(
                 BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent,RQ_ENABLE_BT);
-*/
         } else {
             if (chatService==null) chatService=
                 new BluetoothChatService(this,handler);
@@ -166,8 +176,19 @@ public class MainActivity extends Activity{
             }
         	scr_append("RQ_CONNECT_DEVICE");
             break;
+        
+        //発見有効
+        case RQ_ENABLE_BT:
+            if (resultCode==Activity.RESULT_OK) {
+                chatService=new BluetoothChatService(this,handler);
+            } else {
+                Toast.makeText(this,"Bluetoothが有効ではありません",
+                	Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
+    
 
 
 /*

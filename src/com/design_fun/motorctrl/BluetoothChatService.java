@@ -16,7 +16,7 @@ import android.util.Log;
 
 public class BluetoothChatService {
     //設定定数
-    private static final String NAME="BluetoothEx";
+    private static final String NAME="Moterctrl";
     private static final UUID   MY_UUID=
 //        UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
           UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");  
@@ -127,8 +127,7 @@ public class BluetoothChatService {
         //コンストラクタ
         public AcceptThread() {
             try {
-                serverSocket=adapter.
-                    listenUsingRfcommWithServiceRecord(NAME,MY_UUID);
+                serverSocket=adapter.listenUsingRfcommWithServiceRecord(NAME,MY_UUID);
             } catch (IOException e) {
             }
         }
