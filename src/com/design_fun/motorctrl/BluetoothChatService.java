@@ -13,6 +13,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 public class BluetoothChatService {
     //İ’è’è”
@@ -40,7 +41,7 @@ public class BluetoothChatService {
         this.adapter=BluetoothAdapter.getDefaultAdapter();
         this.state  =STATE_NONE;
         this.handler=handler;
-    }
+	}
     
     
     //ó‘Ô‚Ìw’è

@@ -108,8 +108,7 @@ public class MainActivity extends Activity{
             if (chatService==null) chatService=
                 new BluetoothChatService(this,handler);
         }
-        if (chatService==null) chatService=
-                new BluetoothChatService(this,handler);
+
         Log.d("debug","onStart");
 
     }
