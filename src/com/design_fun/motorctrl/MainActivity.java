@@ -1,5 +1,8 @@
 package com.design_fun.motorctrl;
 
+import collectionTest1;
+import collectionTest1.ChkResponse;
+
 import com.design_fun.motorctrl.BluetoothChatService;
 import com.design_fun.motorctrl.DeviceListActivity;
 
@@ -181,8 +184,7 @@ public class MainActivity extends Activity{
             if (resultCode==Activity.RESULT_OK) {
                 chatService=new BluetoothChatService(this,handler);
             } else {
-                Toast.makeText(this,"Bluetoothが有効ではありません",
-                	Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Bluetoothが有効ではありません",Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
@@ -190,37 +192,6 @@ public class MainActivity extends Activity{
     
 
 
-/*
-    //受信テキストの追加
-    private void addText(final String text) {
-        //ハンドラによるユーザーインタフェース操作
-        handler.post(new Runnable(){
-            public void run() {
-                lblReceive.setText(text+"\n"+
-                    lblReceive.getText());
-            }
-        });
-    }
-    
-    //ボタンクリックイベントの処理
-    public void onClick(View v) {
-        if (v==btnSend) {
-            try {
-                //メッセージの送信
-                String message=edtSend.getText().toString();
-                if (message.length()>0) {
-                    chatService.write(message.getBytes());
-                }
-                addText(message);
-                edtSend.setText("",TextView.BufferType.NORMAL);
-            } catch (Exception e) {
-                addText("通信失敗しました");
-            }           
-        }
-    }  
-}
-*/
-	
 
 	public void onClickSpeed(View v)
 	{
@@ -298,4 +269,92 @@ public class MainActivity extends Activity{
     }	
 	
 }
+
+
+
+
+import java.util.ArrayList;
+
+
+
+class collectionTest1{
+	
+	int cntnum=0;
+	
+  public static void main(String args[]){
+      collectionTest1 o = new collectionTest1();
+      o.prnRes();
+  }
+  
+  void prnRes(){
+	  int i=0;
+	  byte [] buf = new byte[1024];
+	  ChkResponse chkRes = new ChkResponse();
+	  while(i++<5){
+		  int bytes = test(buf);
+
+	      if(chkRes.appendBuf(buf,bytes)!=-1){
+	    	    System.out.printf("%d:%s\n",chkRes.indexResponse(),chkRes.stringResponse());
+	    	    chkRes.clear();
+	      }
+//	      break;
+      }
+	
+  }
+  
+  int test(byte buf[]){
+	  final byte [] retval="(OK)".getBytes();
+	  if(cntnum>=retval.length){
+		  cntnum=0;
+	  }
+	  buf[0]=retval[cntnum++];
+	  return 1;
+	  
+  }
+  
+  public class ChkResponse{
+		private StringBuffer stBuf;
+		private ArrayList <String> listResponse;
+		private int index;
+		
+		public ChkResponse() {
+	        stBuf = new StringBuffer();
+	        listResponse = new ArrayList<String>();
+	        listResponse.add("(OK)");
+	        listResponse.add("(ERR)");
+		}
+		
+		public void clear(){
+			stBuf.setLength(0);
+		}
+		
+		public int appendBuf(byte [] buf,int bytes){
+			byte nbuf[] = new byte[bytes];
+			for(int i=0;i<bytes;i++){
+				nbuf[i]=buf[i];
+			}
+			
+			String str = new String(nbuf);
+
+	        stBuf.append(str);
+	    	  System.out.printf("len:%d:%d:%s\n",stBuf.length(),str.length(),stBuf.toString());
+	        index=listResponse.indexOf(stBuf.toString());
+	        return index;
+		}
+		
+		public int indexResponse(){
+			return index;
+		}
+		
+		public int bytesResponse(){
+			return stBuf.length();
+		}
+		
+		public String stringResponse(){
+			return stBuf.toString();
+		}
+	}    
+  
+ }
+
 
