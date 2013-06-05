@@ -1,7 +1,5 @@
 package com.design_fun.motorctrl;
 
-import collectionTest1;
-import collectionTest1.ChkResponse;
 
 import com.design_fun.motorctrl.BluetoothChatService;
 import com.design_fun.motorctrl.DeviceListActivity;
@@ -20,7 +18,9 @@ import android.widget.TextView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.util.Log;;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 public class MainActivity extends Activity{
 	private TextView mTview;
@@ -139,6 +139,9 @@ public class MainActivity extends Activity{
     
     //チャットサーバから情報を取得するハンドラ
     private final Handler handler=new Handler() {
+  	  ChkResponse chkRes = new ChkResponse();
+
+  	  
         //ハンドルメッセージ
         @Override
         public void handleMessage(Message msg) {
@@ -157,9 +160,17 @@ public class MainActivity extends Activity{
             //メッセージ受信
             case MSG_READ:
                 byte[] readBuf=(byte[])msg.obj;
-                scr_append(new String(readBuf,0,msg.arg1));
-                break;
+                
+          	      if(chkRes.appendBuf(readBuf,msg.arg1)!=-1){
+                        scr_append(chkRes.stringResponse());
+                        chkRes.clear();
+          	      }
+                  
+          	    scr_append(chkRes.stringResponse());
+          	    break;
             }
+          	      
+            
         }
     };
 
@@ -176,7 +187,7 @@ public class MainActivity extends Activity{
                 BluetoothDevice device=btAdapter.getRemoteDevice(address);
                 chatService.connect(device);
             }
-        	scr_append("RQ_CONNECT_DEVICE");
+//        	scr_append("RQ_CONNECT_DEVICE");
             break;
         
         //発見有効
@@ -266,53 +277,10 @@ public class MainActivity extends Activity{
 		public void run() {
         	mScroll.fullScroll(View.FOCUS_DOWN); // (9)
         }
-    }	
+    }
 	
-}
-
-
-
-
-import java.util.ArrayList;
-
-
-
-class collectionTest1{
 	
-	int cntnum=0;
-	
-  public static void main(String args[]){
-      collectionTest1 o = new collectionTest1();
-      o.prnRes();
-  }
-  
-  void prnRes(){
-	  int i=0;
-	  byte [] buf = new byte[1024];
-	  ChkResponse chkRes = new ChkResponse();
-	  while(i++<5){
-		  int bytes = test(buf);
-
-	      if(chkRes.appendBuf(buf,bytes)!=-1){
-	    	    System.out.printf("%d:%s\n",chkRes.indexResponse(),chkRes.stringResponse());
-	    	    chkRes.clear();
-	      }
-//	      break;
-      }
-	
-  }
-  
-  int test(byte buf[]){
-	  final byte [] retval="(OK)".getBytes();
-	  if(cntnum>=retval.length){
-		  cntnum=0;
-	  }
-	  buf[0]=retval[cntnum++];
-	  return 1;
-	  
-  }
-  
-  public class ChkResponse{
+	public class ChkResponse{
 		private StringBuffer stBuf;
 		private ArrayList <String> listResponse;
 		private int index;
@@ -355,6 +323,17 @@ class collectionTest1{
 		}
 	}    
   
- }
+	
+	
+}
+
+
+
+
+
+
+
+
+  
 
 

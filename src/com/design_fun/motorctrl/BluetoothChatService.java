@@ -3,7 +3,6 @@ package com.design_fun.motorctrl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.UUID;
 
 
@@ -235,7 +234,6 @@ public class BluetoothChatService {
         public void run() {
             byte[] buf=new byte[10];
             int bytes;
-            ChkResponse chkRes = new ChkResponse();
 
             
             while (true) {
@@ -248,16 +246,6 @@ public class BluetoothChatService {
                 }
             	handler.obtainMessage(MainActivity.MSG_READ,bytes,-1,buf).sendToTarget();
 
-                
-                if(chkRes.appendBuf(buf)!=-2){
-                	handler.obtainMessage(MainActivity.MSG_READ,chkRes.bytesResponse(),-1,chkRes.stringResponse()).sendToTarget();
-                	chkRes.clear();
-                }
-
-                
-                
-
-                
             }
         }
 
@@ -283,40 +271,6 @@ public class BluetoothChatService {
         }
     }
     
-    private class ChkResponse{
-    	private StringBuffer stBuf;
-    	private ArrayList <String> listResponse;
-    	private int index;
-    	
-    	public ChkResponse() {
-            stBuf = new StringBuffer();
-            listResponse = new ArrayList<String>();
-            listResponse.add("(OK)");
-            listResponse.add("(ERR)");
-    	}
-    	
-    	public void clear(){
-    		stBuf.setLength(0);
-    	}
-    	
-    	public int appendBuf(byte [] buf){
-            //stBuf.append(buf.toString());
-            stBuf.append("aa");
-//            index=listResponse.indexOf(stBuf);
-            return 1;
-    	}
-    	
-    	public int indexResponse(){
-    		return index;
-    	}
-    	
-    	public int bytesResponse(){
-    		return stBuf.length();
-    	}
-    	
-    	public String stringResponse(){
-    		return stBuf.toString();
-    	}
-    }
+
     
 }
