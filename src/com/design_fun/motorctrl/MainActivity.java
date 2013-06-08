@@ -33,6 +33,7 @@ public class MainActivity extends Activity{
     //メッセージ定数
     public static final int MSG_STATE_CHANGE=1;
     public static final int MSG_READ        =2;
+    public static final int MSG_WRITE       =3;
 
     //リクエスト定数
     private static final int RQ_CONNECT_DEVICE=1;
@@ -160,14 +161,23 @@ public class MainActivity extends Activity{
             //メッセージ受信
             case MSG_READ:
                 byte[] readBuf=(byte[])msg.obj;
+                int retCode;
                 
-          	      if(chkRes.appendBuf(readBuf,msg.arg1)!=-1){
-                        scr_append(chkRes.stringResponse());
-                        chkRes.clear();
-          	      }
+          	    mTview.append(new String(readBuf,0,msg.arg1));
+          	    
+          	    retCode=chkRes.appendBuf(readBuf,msg.arg1);
+          	    if(retCode!=-1){
+      	    	  	String pstr = String.format(":%d", retCode);
+                    scr_append(pstr);
+                    chkRes.clear();
+          	    }
                   
-          	    scr_append(chkRes.stringResponse());
+
           	    break;
+            
+            case MSG_WRITE:
+            	mTview.append(new String((byte[])msg.obj)+"...");
+            	chkRes.clear();          
             }
           	      
             
@@ -305,7 +315,7 @@ public class MainActivity extends Activity{
 			String str = new String(nbuf);
 
 	        stBuf.append(str);
-	    	  System.out.printf("len:%d:%d:%s\n",stBuf.length(),str.length(),stBuf.toString());
+//	    	  System.out.printf("len:%d:%d:%s\n",stBuf.length(),str.length(),stBuf.toString());
 	        index=listResponse.indexOf(stBuf.toString());
 	        return index;
 		}

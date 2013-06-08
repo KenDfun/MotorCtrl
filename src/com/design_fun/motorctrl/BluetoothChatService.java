@@ -251,14 +251,12 @@ public class BluetoothChatService {
 
         //èëÇ´çûÇ›
         public void write(byte[] buf) {
-        	byte[] msgBytes = "write!".getBytes();
-        	
             try {
                 output.write(buf);
             } catch (IOException e) {
             }
 
-            handler.obtainMessage(MainActivity.MSG_READ,msgBytes.length,-1,msgBytes).sendToTarget();
+            handler.obtainMessage(MainActivity.MSG_WRITE,-1,-1,buf).sendToTarget();
 
         }
 
