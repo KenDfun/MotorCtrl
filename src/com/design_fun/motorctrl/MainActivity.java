@@ -218,11 +218,11 @@ public class MainActivity extends Activity{
 	{
 		switch(v.getId()){
 		case R.id.button1:
-			chatService.write("Push Up".getBytes());
+			chatService.write("(UP:PWM1)".getBytes());
 			break;
 			
 		case R.id.button2:
-			chatService.write("Push Down".getBytes());
+			chatService.write("(DOWN:PWM1)".getBytes());
 			break;
 		}
 		
@@ -234,12 +234,12 @@ public class MainActivity extends Activity{
 		 
 		 switch(v.getId()){
 		 case R.id.toggleButton1:
-			str = "LED1 ";
+
 			if(mTglLed1.isChecked()){
-				str += "ON";
+				str = "(ON:LED1)";
 			}
 			else{
-				str += "OFF";
+				str = "(OFF:LED1)";
 			}
 			break;
 		 case R.id.toggleButton2:
